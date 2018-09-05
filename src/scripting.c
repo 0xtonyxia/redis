@@ -359,7 +359,7 @@ int luaRedisGenericCommand(lua_State *lua, int raise_error) {
     static int inuse = 0;   /* Recursive calls detection. */
 
     /* Reflect MULTI state */
-    if (server.lua_multi_emitted || (server.lua_caller->flags & CLIENT_MULTI)) {
+    if (server.lua_caller->flags & CLIENT_MULTI) {
         c->flags |= CLIENT_MULTI;
     } else {
         c->flags &= ~CLIENT_MULTI;
@@ -554,6 +554,7 @@ int luaRedisGenericCommand(lua_State *lua, int raise_error) {
     {
         execCommandPropagateMulti(server.lua_caller);
         server.lua_multi_emitted = 1;
+        c->flags |= CLIENT_MULTI;
     }
 
     /* Run the command */
